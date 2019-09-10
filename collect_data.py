@@ -10,6 +10,16 @@ from facenet_pytorch import MTCNN
 from check_face import FaceFinder
 
 
+def crop_and_save(dataset, rootdir, subdir):
+    labels = dataset.classes
+    for i, (img, label_idx) in enumerate(tqdm(dataset)):
+        emotion = labels[label_idx]
+        output_dir = os.path.join(rootdir, subdir, emotion)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        img.save(os.path.join(output_dir, f'{emotion}_{i}.png'), 'PNG')
+
+
 def construct_query(emotion):
     exceptions = ['disgusted', 'grossed_out', 'resentful', 'elated']
     if emotion in exceptions:
