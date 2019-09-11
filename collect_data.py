@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# 'scared': ['scared', 'fearful', 'afraid', 'anxious', 'panic'],
 
 import os
 from PIL import Image
@@ -10,6 +11,7 @@ from facenet_pytorch import MTCNN
 from check_face import FaceFinder
 
 
+# get the human face from each image and save them in a separate directory
 def crop_and_save(dataset, rootdir, subdir):
     labels = dataset.classes
     for i, (img, label_idx) in enumerate(tqdm(dataset)):
@@ -53,19 +55,13 @@ def filter_human_images(img_dir, face_finder):
     return num_human, num_inhuman, num_corrupted
 
 
-if __name__ == '__main__':
-    # define the emotion labels
+def download_emotions(data_dir, driver_dir):
     emotion_map = {'angry': ['angry', 'furious', 'resentful', 'irate'],
                    'disgusted': ['disgusted', 'sour', 'grossed out'],
                    'happy': ['happy', 'smiling', 'cheerful', 'elated', 'joyful'],
                    'sad': ['sad', 'depressed', 'sorrowful', 'mournful', 'grieving', 'crying'],
-                   # 'scared': ['scared', 'fearful', 'afraid', 'anxious', 'panic'],
                    'surprised': ['surprised', 'astonished', 'shocked', 'amazed']}
 
-    # define the file paths
-    data_dir = '/home/mchobanyan/data/emotion/images/'
-
-    # finds human faces
     face_model = FaceFinder(MTCNN(keep_all=True))
 
     # instantiate the downloader
@@ -77,11 +73,12 @@ if __name__ == '__main__':
             'image_directory': '',
             'silent_mode': True,
             'limit': -1,
-            'chromedriver': '/home/mchobanyan/data/emotion/chromedriver'}
+            'chromedriver': driver_dir}
 
     for emotion_label, keywords in emotion_map.items():
         for k in keywords:
-            search_limit = 2000 if (k == emotion_label) else 1000
+            # search_limit = 2000 if (k == emotion_label) else 1000
+            search_limit = 5 if (k == emotion_label) else 5
             args.update({'keywords': construct_query(k), 'image_directory': emotion_label, 'limit': search_limit})
             response.download(args)
         print(f'Filtering images for "{emotion_label}"')
@@ -91,3 +88,9 @@ if __name__ == '__main__':
         print(f'Num of non-human images removed:\t{counts[1]}')
         print(f'Num of corrupted images removed:\t{counts[2]}')
         print()
+
+
+if __name__ == '__main__':
+    data_dir = '/home/mchobanyan/data/emotion/images/imagenet/'
+    chrome_driver = '/home/mchobanyan/data/emotion/chromedriver'
+    download_emotions(data_dir, chrome_driver)
