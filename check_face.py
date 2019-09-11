@@ -23,3 +23,19 @@ class FaceFinder:
         """
         boxes, _ = self.face_model.detect(img)
         return (boxes is not None) and (len(boxes) == 1)
+
+    # TODO: limit code reuse
+    def __call__(self, img):
+        """Extract the image region containing the single face
+
+        Parameters
+        ----------
+        img: Image
+
+        Returns
+        -------
+        Image
+        """
+        if self.has_single_face(img):
+            boxes, _ = self.face_model.detect(img)
+            return img.crop(boxes[0])
