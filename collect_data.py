@@ -4,22 +4,18 @@
 # 'scared': ['scared', 'fearful', 'afraid', 'anxious', 'panic'],
 
 import os
+import warnings
 from PIL import Image
 from tqdm import tqdm
 from google_images_download import google_images_download
 from facenet_pytorch import MTCNN
 from check_face import FaceFinder
 
+warnings.filterwarnings("error")
 
-# get the human face from each image and save them in a separate directory
-def crop_and_save(dataset, rootdir, subdir):
-    labels = dataset.classes
-    for i, (img, label_idx) in enumerate(tqdm(dataset)):
-        emotion = labels[label_idx]
-        output_dir = os.path.join(rootdir, subdir, emotion)
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-        img.save(os.path.join(output_dir, f'{emotion}_{i}.png'), 'PNG')
+# TODO: test both data collection methods again (especially with the UserWarning)
+
+# EMOTIONS
 
 
 def construct_query(emotion):
@@ -44,6 +40,7 @@ def filter_human_images(img_dir, face_finder):
     for filename in tqdm(os.listdir(img_dir)):
         try:
             img = Image.open(os.path.join(img_dir, filename))
+            img = img.convert('RGB')
             if face_finder.has_single_face(img):
                 num_human += 1
             else:
@@ -77,8 +74,7 @@ def download_emotions(data_dir, driver_dir):
 
     for emotion_label, keywords in emotion_map.items():
         for k in keywords:
-            # search_limit = 2000 if (k == emotion_label) else 1000
-            search_limit = 5 if (k == emotion_label) else 5
+            search_limit = 2000 if (k == emotion_label) else 1000
             args.update({'keywords': construct_query(k), 'image_directory': emotion_label, 'limit': search_limit})
             response.download(args)
         print(f'Filtering images for "{emotion_label}"')
@@ -90,7 +86,44 @@ def download_emotions(data_dir, driver_dir):
         print()
 
 
+# IMAGENET
+
+
+def filter_and_resize_images(img_dir):
+    for filename in tqdm(os.listdir(img_dir)):
+        filepath = os.path.join(img_dir, filename)
+        try:
+            img = Image.open(filepath)
+            img = img.convert('RGB')
+            img = img.resize((224, 224))
+            img.save(filepath)
+        except:
+            os.remove(filepath)
+
+
+def download_fake_imagenet(data_dir, driver_dir, label_file):
+    labels = []
+    with open(label_file, 'r') as file:
+        for line in file:
+            labels.append(line.strip())
+
+    response = google_images_download.googleimagesdownload()
+    args = {'keywords': '',
+            'output_directory': data_dir,
+            'image_directory': '',
+            'silent_mode': True,
+            'limit': 10,
+            'chromedriver': driver_dir}
+
+    for label in labels:
+        args.update({'keywords': label, 'image_directory': label})
+        response.download(args)
+        filter_and_resize_images(os.path.join(data_dir, label))
+
+
 if __name__ == '__main__':
     data_dir = '/home/mchobanyan/data/emotion/images/imagenet/'
     chrome_driver = '/home/mchobanyan/data/emotion/chromedriver'
-    download_emotions(data_dir, chrome_driver)
+    imagenet_label_file = '/home/mchobanyan/data/emotion/imagenet_labels.txt'
+    # download_emotions(data_dir, chrome_driver)
+    download_fake_imagenet(data_dir, chrome_driver, imagenet_label_file)
