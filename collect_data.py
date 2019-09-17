@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# 'scared': ['scared', 'fearful', 'afraid', 'anxious', 'panic'],
 
 import os
 import warnings
@@ -9,14 +8,16 @@ from PIL import Image
 from tqdm import tqdm
 from google_images_download import google_images_download
 from facenet_pytorch import MTCNN
-from check_face import FaceFinder
+from model import FaceFinder
 
 warnings.filterwarnings("error")
 
+
 # TODO: test both data collection methods again (especially with the UserWarning)
 
-# EMOTIONS
-
+# ----------------------------------------------------------------------------------------------------------------------
+#                                                       EMOTIONS
+# ----------------------------------------------------------------------------------------------------------------------
 
 def construct_query(emotion):
     exceptions = ['disgusted', 'grossed_out', 'resentful', 'elated']
@@ -86,8 +87,9 @@ def download_emotions(data_dir, driver_dir):
         print()
 
 
-# IMAGENET
-
+# ----------------------------------------------------------------------------------------------------------------------
+#                                                       ImageNet
+# ----------------------------------------------------------------------------------------------------------------------
 
 def filter_and_resize_images(img_dir):
     for filename in tqdm(os.listdir(img_dir)):
@@ -127,3 +129,6 @@ if __name__ == '__main__':
     imagenet_label_file = '/home/mchobanyan/data/emotion/imagenet_labels.txt'
     # download_emotions(data_dir, chrome_driver)
     download_fake_imagenet(data_dir, chrome_driver, imagenet_label_file)
+
+    # keywords used for scared
+    # 'scared': ['scared', 'fearful', 'afraid', 'anxious', 'panic'],
