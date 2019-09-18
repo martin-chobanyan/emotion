@@ -38,8 +38,8 @@ class RecoverImage:
             The recovered image as a PIL Image
         """
         if self.means is not None:
-            means = torch.Tensor(self.means).view(3, 1, 1)
-            stdvs = torch.Tensor(self.stdvs).view(3, 1, 1)
+            means = torch.tensor(self.means).view(3, 1, 1)
+            stdvs = torch.tensor(self.stdvs).view(3, 1, 1)
             x = (x * stdvs) + means
         x *= 255
         x = x.permute(1, 2, 0).numpy().astype(np.uint8)
