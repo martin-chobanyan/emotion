@@ -20,6 +20,7 @@ def crop_and_save(dataset, out_dir):
         img.save(os.path.join(output_dir, f'{emotion}_{i}.png'), 'PNG')
 
 
+# process the raw images, detect the faces, crop them, make them grayscale, and save them
 if __name__ == '__main__':
     root_dir = '/home/mchobanyan/data/emotion/images/'
     raw_dir = os.path.join(root_dir, 'raw')
