@@ -16,7 +16,22 @@ IMAGENET_MEANS = [0.485, 0.456, 0.406]
 IMAGENET_STDVS = [0.229, 0.224, 0.225]
 
 
-class FakeImagenetDataset(ImageFolder):
+class ColorAndGrayImages(ImageFolder):
+    """Retrieves and returns an image along with its grayscale version
+
+    This class extends the behavior of ImageFolder, meaning images should be arranged in subdirectories where then name
+    of the subdirectory is the label. Along with returning the standard RGB version of the image, this class will also
+    return the one-channel grayscale version.
+
+    Parameters
+    ----------
+    image_dir: str
+        The root directory containing the label subdirectories
+    colored_transform: callable, optional
+        An transformation that can be applied to the color image (default=None)
+    gray_transform: callable, optional
+        An transformation that can be applied to the grayscale image (default=None)
+    """
     def __init__(self, image_dir, colored_transform=None, gray_transform=None):
         super().__init__(image_dir)
         self.colored_transform = colored_transform
@@ -33,6 +48,25 @@ class FakeImagenetDataset(ImageFolder):
 
 
 def train_epoch_gray(gray_model, color_model, dataloader, criterion, optimizer, device):
+    """Trains the grayscale model by minimizing the loss between the gray model's output and the color model's output
+
+    Note that the only trainable portion of the gray model should be the first convolution layer.
+    The color model should not be trainable at all (it is only used to create the target output for the gray model).
+
+    Parameters
+    ----------
+    gray_model: nn.Module
+    color_model: nn.Module
+    dataloader: DataLoader
+    criterion: callable loss function
+    optimizer: pytorch optimizer
+    device: torch.device
+
+    Returns
+    -------
+    float
+        The average loss across the epoch
+    """
     avg_loss = []
     gray_model.train()
     color_model.train()
@@ -53,6 +87,22 @@ def train_epoch_gray(gray_model, color_model, dataloader, criterion, optimizer, 
 
 
 def val_epoch_gray(gray_model, color_model, dataloader, criterion, device):
+    """Runs a validation epoch using the grayscale model and the color model
+
+    Parameters
+    ----------
+    gray_model: nn.Module
+    color_model: nn.Module
+    dataloader: DataLoader
+    criterion: callable loss function
+    optimizer: pytorch optimizer
+    device: torch.device
+
+    Returns
+    -------
+    float
+        The average loss across the epoch
+    """
     avg_loss = []
     gray_model.eval()
     color_model.eval()
@@ -76,19 +126,27 @@ def val_epoch_gray(gray_model, color_model, dataloader, criterion, device):
 
 
 if __name__ == '__main__':
-    dataset = FakeImagenetDataset(image_dir='/home/mchobanyan/data/emotion/images/imagenet/',
-                                  colored_transform=Compose([ToTensor(), Normalize(IMAGENET_MEANS, IMAGENET_STDVS)]),
-                                  gray_transform=ToTensor())
+    P_TRAIN = 0.8  # proportion of examples to use for training
+    BATCH_SIZE = 32
+    NUM_WORKERS = 6
+    NUM_EPOCHS = 50
+    learning_rate = 0.001
+    DECAY_RATE = 5  # number of epochs after which to decay the learning rate
+    LR_DECAY = 0.5  # amount to decrease the learning rate every 'DECAY_RATE' epochs
+    CHECKPOINT_RATE = 5  # number of epochs after which to checkpoint the model
+
+    dataset = ColorAndGrayImages(image_dir='/home/mchobanyan/data/emotion/images/imagenet/',
+                                 colored_transform=Compose([ToTensor(), Normalize(IMAGENET_MEANS, IMAGENET_STDVS)]),
+                                 gray_transform=ToTensor())
     print(f'Number of images: {len(dataset)}')
 
-    train_size = int(len(dataset) * 0.8)
+    train_size = int(len(dataset) * P_TRAIN)
     val_size = len(dataset) - train_size
     train_data, val_data = random_split(dataset, [train_size, val_size])
+    train_loader = DataLoader(train_data, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, shuffle=True)
+    val_loader = DataLoader(val_data, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
 
-    bsize = 32
-    train_loader = DataLoader(train_data, batch_size=bsize, num_workers=6, shuffle=True)
-    val_loader = DataLoader(val_data, batch_size=bsize, num_workers=6)
-
+    # initialize both models
     color_model = resnet50(pretrained=True)
     gray_model = init_grayscale_resnet()
 
@@ -97,31 +155,29 @@ if __name__ == '__main__':
         param.requires_grad = False
     gray_model.conv1.weight.requires_grad = True
 
-    device = torch.device('cuda')
-    color_model = color_model.to(device)
-    gray_model = gray_model.to(device)
+    # prepare each model for the fine-tuning
+    torch_device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    color_model = color_model.to(torch_device)
+    gray_model = gray_model.to(torch_device)
     criterion = nn.MSELoss()
-
-    learning_rate = 0.001
     optimizer = optim.Adam(gray_model.parameters(), lr=learning_rate)
 
     train_losses = []
     val_losses = []
-    num_epochs = 50
-    for epoch in range(num_epochs):
-        if epoch % 5 == 0:
-            learning_rate /= 2
+    for epoch in range(NUM_EPOCHS):
+        if epoch % DECAY_RATE == 0:
+            learning_rate *= LR_DECAY
             optimizer = optim.Adam(gray_model.parameters(), lr=learning_rate)
             print(f'New learning rate: {learning_rate}')
 
-        train_loss = train_epoch_gray(gray_model, color_model, train_loader, criterion, optimizer, device)
+        train_loss = train_epoch_gray(gray_model, color_model, train_loader, criterion, optimizer, torch_device)
         train_losses.append(train_loss)
 
-        val_loss = val_epoch_gray(gray_model, color_model, val_loader, criterion, device)
+        val_loss = val_epoch_gray(gray_model, color_model, val_loader, criterion, torch_device)
         val_losses.append(val_loss)
 
         print(f'Epoch: {epoch}\tTrainLoss: {train_loss}\tValLoss: {val_loss}')
 
-        if epoch % 5 == 0:
+        if epoch % CHECKPOINT_RATE == 0:
             print('Checkpointing model...')
             checkpoint(gray_model, f'/home/mchobanyan/data/emotion/models/emotion_detect/imagenet/gray_{epoch}.pt')
