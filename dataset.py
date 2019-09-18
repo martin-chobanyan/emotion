@@ -9,8 +9,16 @@ from facenet_pytorch import MTCNN
 from model import FaceFinder
 
 
-# get the human face from each image and save them in a separate directory
 def crop_and_save(dataset, out_dir):
+    """Crop each image from the dataset and store in the output directory
+
+    Parameters
+    ----------
+    dataset: Dataset
+        The pytorch Dataset class for generating the images
+    out_dir: str
+        The path to the output directory
+    """
     labels = dataset.classes
     for i, (img, label_idx) in enumerate(tqdm(dataset)):
         emotion = labels[label_idx]
@@ -20,8 +28,8 @@ def crop_and_save(dataset, out_dir):
         img.save(os.path.join(output_dir, f'{emotion}_{i}.png'), 'PNG')
 
 
-# process the raw images, detect the faces, crop them, make them grayscale, and save them
 if __name__ == '__main__':
+    # process the raw images, detect the faces, crop them, make them grayscale, and save them
     root_dir = '/home/mchobanyan/data/emotion/images/'
     raw_dir = os.path.join(root_dir, 'raw')
     output_dir = os.path.join(root_dir, 'gray')
