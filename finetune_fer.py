@@ -20,6 +20,11 @@ from torchvision.transforms import Compose, RandomAffine, RandomHorizontalFlip, 
 from model import init_grayscale_resnet, train_epoch, val_epoch, checkpoint
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+#                                                   Main script
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 if __name__ == '__main__':
     NUM_EMOTIONS = 5
     P_TRAIN = 0.8  # change this to 1.0 to use all FER examples for fine-tuning the model

@@ -29,8 +29,8 @@ IMAGENET_MEANS = [0.485, 0.456, 0.406]
 IMAGENET_STDVS = [0.229, 0.224, 0.225]
 
 
-# TODO: port the FER finetuning code
 # TODO: port the main finetuning code
+# TODO: port the code for labeling the images and videos
 
 
 # ----------------------------------------------------------------------------------------------------------------------
