@@ -112,7 +112,7 @@ class FacePredictor:
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-#                                  Utilities for initializing and loading models
+#                               Utilities for initializing, loading, and saving models
 # ----------------------------------------------------------------------------------------------------------------------
 
 
@@ -149,6 +149,23 @@ def load_model(model_state, num_emotions=5):
     model.fc = nn.Linear(conv_out_features, num_emotions)
     model.load_state_dict(torch.load(model_state))
     return model
+
+
+def checkpoint(model, filepath):
+    """Save the state of the model
+
+    To restore the model do the following:
+    >> the_model = TheModelClass(*args, **kwargs)
+    >> the_model.load_state_dict(torch.load(PATH))
+
+    Parameters
+    ----------
+    model: nn.Module
+        The pytorch model to be saved
+    filepath: str
+        The filepath of the pickle
+    """
+    torch.save(model.state_dict(), filepath)
 
 
 # ----------------------------------------------------------------------------------------------------------------------

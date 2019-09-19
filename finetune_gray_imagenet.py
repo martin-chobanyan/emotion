@@ -11,6 +11,7 @@ initialized, 1-channel convolution layer. This layer alone is then finetuned to 
 the output of the RGB pretrained Resnet model.
 """
 
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -234,8 +235,10 @@ if __name__ == '__main__':
     DECAY_RATE = 5  # number of epochs after which to decay the learning rate
     LR_DECAY = 0.5  # amount to decrease the learning rate every 'DECAY_RATE' epochs
     CHECKPOINT_RATE = 5  # number of epochs after which to checkpoint the model
+    IMAGE_DIR = '/home/mchobanyan/data/emotion/images/imagenet/'
+    MODEL_DIR = '/home/mchobanyan/data/emotion/models/emotion_detect/imagenet/'
 
-    dataset = ColorAndGrayImages(image_dir='/home/mchobanyan/data/emotion/images/imagenet/',
+    dataset = ColorAndGrayImages(image_dir=IMAGE_DIR,
                                  colored_transform=Compose([ToTensor(), Normalize(IMAGENET_MEANS, IMAGENET_STDVS)]),
                                  gray_transform=ToTensor())
     print(f'Number of images: {len(dataset)}')
@@ -269,15 +272,11 @@ if __name__ == '__main__':
             learning_rate *= LR_DECAY
             optimizer = optim.Adam(gray_model.parameters(), lr=learning_rate)
             print(f'New learning rate: {learning_rate}')
-
         train_loss = train_epoch_gray(gray_model, color_model, train_loader, criterion, optimizer, torch_device)
-        train_losses.append(train_loss)
-
         val_loss = val_epoch_gray(gray_model, color_model, val_loader, criterion, torch_device)
+        train_losses.append(train_loss)
         val_losses.append(val_loss)
-
         print(f'Epoch: {epoch}\tTrainLoss: {train_loss}\tValLoss: {val_loss}')
-
         if epoch % CHECKPOINT_RATE == 0:
             print('Checkpointing model...')
-            checkpoint(gray_model, f'/home/mchobanyan/data/emotion/models/emotion_detect/imagenet/gray_{epoch}.pt')
+            checkpoint(gray_model, os.path.join(MODEL_DIR, f'gray_{epoch}.pt'))
