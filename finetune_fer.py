@@ -60,10 +60,13 @@ if __name__ == '__main__':
     val_losses = []
     for epoch in range(NUM_EPOCHS):
         train_loss = train_epoch(model, train_loader, criterion, optimizer, device)
-        val_loss, val_acc = val_epoch(model, val_loader, criterion, device)
         train_losses.append(train_loss)
-        val_losses.append(val_loss)
-        print(f'Epoch: {epoch}\tTrainLoss: {train_loss}\tValLoss: {val_loss}\tValAcc: {val_acc}')
+        message = f'Epoch: {epoch}\tTrainLoss: {train_loss}'
+        if len(val_data) > 0:  # only run validation epoch if the validation dataset is not empty
+            val_loss, val_acc = val_epoch(model, val_loader, criterion, device)
+            val_losses.append(val_loss)
+            message += f'\tValLoss: {val_loss}\tValAcc: {val_acc}'
+        print(message)
         if epoch % CHECKPOINT_RATE == 0:
             print('Checkpointing model...')
             checkpoint(model, os.path.join(MODEL_DIR, f'fer_model_{epoch}.pt'))
