@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+import os
 import torch
 import numpy as np
 from tqdm import tqdm
@@ -44,6 +44,25 @@ class RecoverImage:
         x *= 255
         x = x.permute(1, 2, 0).numpy().astype(np.uint8)
         return Image.fromarray(x)
+
+
+def resize_and_save(dataset, out_dir):
+    """Crop each image from the dataset and store in the output directory
+
+    Parameters
+    ----------
+    dataset: Dataset
+        The pytorch Dataset class for generating the images
+    out_dir: str
+        The path to the output directory
+    """
+    labels = dataset.classes
+    for i, (img, label_idx) in enumerate(tqdm(dataset)):
+        emotion = labels[label_idx]
+        output_dir = os.path.join(out_dir, emotion)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        img.save(os.path.join(output_dir, f'{emotion}_{i}.png'), 'PNG')
 
 
 def calc_norm_stats(data, num_channels=3):
