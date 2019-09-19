@@ -3,6 +3,7 @@
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
 from torchvision.datasets import ImageFolder
@@ -10,10 +11,21 @@ from torchvision.models import resnet50
 from torchvision.transforms import Compose, Grayscale, Normalize, ToTensor
 from dtsckit.pytorch.model import checkpoint
 from model import init_grayscale_resnet
+from utils import RecoverImage
 
 # imagenet color normalization
 IMAGENET_MEANS = [0.485, 0.456, 0.406]
 IMAGENET_STDVS = [0.229, 0.224, 0.225]
+
+
+# TODO: port the FER construction code
+# TODO: port the FER finetuning code
+# TODO: port the main finetuning code
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#                                         Tools for fine-tuning the gray model
+# ----------------------------------------------------------------------------------------------------------------------
 
 
 class ColorAndGrayImages(ImageFolder):
@@ -32,6 +44,7 @@ class ColorAndGrayImages(ImageFolder):
     gray_transform: callable, optional
         An transformation that can be applied to the grayscale image (default=None)
     """
+
     def __init__(self, image_dir, colored_transform=None, gray_transform=None):
         super().__init__(image_dir)
         self.colored_transform = colored_transform
@@ -121,11 +134,89 @@ def val_epoch_gray(gray_model, color_model, dataloader, criterion, device):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
+#                                            Tools for comparing the models
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def top_k(output, k):
+    """Returns the top-k predicted label index along with their associated probabilities
+
+    Parameters
+    ----------
+    output: torch.Tensor
+        The model output
+    k: int
+
+    Returns
+    -------
+    torch.LongTensor, torch.FloatTensor
+         The top-k label indices and their associated probabilities
+    """
+    probs = F.softmax(output, dim=1).squeeze()
+    pred_idx = torch.argsort(probs, descending=True)[:k]
+    return pred_idx, probs[pred_idx]
+
+
+class CompareModels:
+    """Compare the model (color) Imagenet-pretrained model with the grayscale variant
+
+    Parameters
+    ----------
+    gray_model: nn.Module
+    color_model: nn.Module
+    labels: list[str]
+        A list of the 1000 Imagenet labels in order
+    means: list[float], optional
+        The per channel means used to normalize the RGB images (default=None; uses Imagenet means)
+    stdvs: list[float], optional
+        The per channel standard deviations used to normalize the RGB images
+        (default=None; uses Imagenet standard deviations)
+    """
+
+    def __init__(self, gray_model, color_model, labels, means=None, stdvs=None):
+        self.gray_model = gray_model.eval()
+        self.color_model = color_model.eval()
+        self.labels = labels
+        self.recover = RecoverImage(IMAGENET_MEANS if means is None else means,
+                                    IMAGENET_STDVS if means is None else stdvs)
+
+    def __call__(self, color_tensor, gray_tensor, k=5):
+        """Run each model on the inputs and print the top-k predicted labels along with their confidences
+
+        Parameters
+        ----------
+        color_tensor: torch.Tensor
+            The tensor input for the color model
+        gray_tensor: torch.Tensor
+            The tensor input for the gray model
+        k: int, optional
+            The k value for the finding the top-k predictions
+        """
+        with torch.no_grad():
+            color_pred = color_model(color_tensor.unsqueeze(0))
+            pred_idx, probs = top_k(color_pred, k)
+            print('Color predictions:')
+            for idx, p in zip(pred_idx.tolist(), probs.tolist()):
+                print(f'{self.labels[idx]}: {round(100 * p, 2)}%')
+            print()
+
+            gray_pred = gray_model(gray_tensor.unsqueeze(0))
+            pred_idx, probs = top_k(gray_pred, k)
+            print('Gray predictions:')
+            for idx, p in zip(pred_idx.tolist(), probs.tolist()):
+                print(f'{self.labels[idx]}: {round(100 * p, 2)}%')
+
+        color_img = self.recover(color_tensor)
+        color_img.show()
+
+
+# ----------------------------------------------------------------------------------------------------------------------
 #                                                   Main script
 # ----------------------------------------------------------------------------------------------------------------------
 
 
 if __name__ == '__main__':
+
     P_TRAIN = 0.8  # proportion of examples to use for training
     BATCH_SIZE = 32
     NUM_WORKERS = 6
