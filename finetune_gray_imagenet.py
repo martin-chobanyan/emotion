@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+This file defines a script that finetunes a modified version of an Imagenet-pretrained Resnet model.
+Since the input to the emotion classifier will be transformed to grayscale, using the standard pretrained Resnet
+will not be optimal (since it was trained on RGB images).
+
+Instead, a new version of the pretrained model is created by swapping the first convolutional layer with a new,
+initialized, 1-channel convolution layer. This layer alone is then finetuned to match
+the output of the RGB pretrained Resnet model.
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -18,7 +28,6 @@ IMAGENET_MEANS = [0.485, 0.456, 0.406]
 IMAGENET_STDVS = [0.229, 0.224, 0.225]
 
 
-# TODO: port the FER construction code
 # TODO: port the FER finetuning code
 # TODO: port the main finetuning code
 
