@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+This file defines a script for a third and final iteration of fine-tuning. This step fine-tunes the model on the
+emotions downloaded from Google Images using the download_data.py file. The base model will be the results from the
+previous stage of fine-tuning (on FER data). Unlike the previous step, the entire model will not be trainable (only the
+last bottleneck and fully connected layers are trainable for the resnet model).
+"""
+
 import os
 from PIL import Image
 import torch
