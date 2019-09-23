@@ -32,6 +32,10 @@ IMAGENET_STDVS = [0.229, 0.224, 0.225]
 # TODO: port the main finetuning code
 # TODO: port the code for labeling the images and videos
 
+# TODO: try using the existing 3-channel input weights by summing them along the channel
+# TODO: try the same thing but add some noise to the weights
+# TODO: try adding an extra preprocessing layer that maps a 1-channel grayscale image to the 3-channel Resnet input
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 #                                         Tools for fine-tuning the gray model
