@@ -8,4 +8,24 @@ and passes it to the FacePredictor class (which wraps the capabilities of the em
 emotion label along with its softmax probability).
 """
 
-from model import FaceFinder, FacePredictor
+import os
+import torch
+from facenet_pytorch import MTCNN
+from model import FaceFinder, FacePredictor, load_model
+
+# ----------------------------------------------------------------------------------------------------------------------
+#                                                   Main script
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+if __name__ == '__main__':
+    EMOTIONS = ['angry', 'disgusted', 'happy', 'sad', 'surprised']
+    MODEL_PATH = '/home/mchobanyan/data/emotion/models/emotion_detect/gray-base/model_10.pt'
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = load_model(MODEL_PATH)
+
+    face_finder = FaceFinder(MTCNN(keep_all=True))
+    predict_emotion = FacePredictor(model, EMOTIONS)
+
+    

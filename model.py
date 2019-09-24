@@ -135,8 +135,8 @@ def load_model(model_state, num_emotions=5):
 
     Parameters
     ----------
-    model_state: dict
-        The pytorch model state dictionary
+    model_state: str
+        The path to the saved model state dictionary
     num_emotions: int, optional
         The number of emotions to classify (default=5)
 
