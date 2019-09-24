@@ -28,4 +28,4 @@ if __name__ == '__main__':
     face_finder = FaceFinder(MTCNN(keep_all=True))
     predict_emotion = FacePredictor(model, EMOTIONS)
 
-    
+

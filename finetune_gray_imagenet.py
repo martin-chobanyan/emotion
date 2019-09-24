@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 This file defines a script that finetunes a modified version of an Imagenet-pretrained Resnet model.
 Since the input to the emotion classifier will be transformed to grayscale, using the standard pretrained Resnet
@@ -28,6 +27,10 @@ from utils import RecoverImage
 IMAGENET_MEANS = [0.485, 0.456, 0.406]
 IMAGENET_STDVS = [0.229, 0.224, 0.225]
 
+
+# TODO: try using the existing 3-channel input weights by summing them along the channel
+# TODO: try the same thing but add some noise to the weights
+# TODO: try adding an extra preprocessing layer that maps a 1-channel grayscale image to the 3-channel Resnet input
 
 # ----------------------------------------------------------------------------------------------------------------------
 #                                         Tools for fine-tuning the gray model
