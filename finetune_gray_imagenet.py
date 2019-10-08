@@ -28,8 +28,6 @@ IMAGENET_MEANS = [0.485, 0.456, 0.406]
 IMAGENET_STDVS = [0.229, 0.224, 0.225]
 
 
-# TODO: try using the existing 3-channel input weights by summing them along the channel
-# TODO: try the same thing but add some noise to the weights
 # TODO: try adding an extra preprocessing layer that maps a 1-channel grayscale image to the 3-channel Resnet input
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -202,21 +200,21 @@ class CompareModels:
             The k value for the finding the top-k predictions
         """
         with torch.no_grad():
-            color_pred = color_model(color_tensor.unsqueeze(0))
+            color_pred = self.color_model(color_tensor.unsqueeze(0))
             pred_idx, probs = top_k(color_pred, k)
             print('Color predictions:')
             for idx, p in zip(pred_idx.tolist(), probs.tolist()):
                 print(f'{self.labels[idx]}: {round(100 * p, 2)}%')
             print()
 
-            gray_pred = gray_model(gray_tensor.unsqueeze(0))
+            gray_pred = self.gray_model(gray_tensor.unsqueeze(0))
             pred_idx, probs = top_k(gray_pred, k)
             print('Gray predictions:')
             for idx, p in zip(pred_idx.tolist(), probs.tolist()):
                 print(f'{self.labels[idx]}: {round(100 * p, 2)}%')
 
         color_img = self.recover(color_tensor)
-        color_img.show()
+        return color_img
 
 
 # ----------------------------------------------------------------------------------------------------------------------
