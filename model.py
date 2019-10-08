@@ -116,7 +116,7 @@ class FacePredictor:
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def init_grayscale_resnet():
+def init_grayscale_resnet(init_weights=None):
     """Initialize a pretrained Resnet-50 model and change the first layer to be a one-channel 2D convolution
 
     Returns
@@ -124,8 +124,11 @@ def init_grayscale_resnet():
     gray_model: nn.Module
     """
     gray_model = resnet50(pretrained=True)
-    w = torch.zeros((64, 1, 7, 7))
-    nn.init.kaiming_uniform_(w, a=math.sqrt(5))
+    if init_weights is None:
+        w = torch.zeros((64, 1, 7, 7))
+        nn.init.kaiming_uniform_(w, a=math.sqrt(5))
+    else:
+        w = init_weights
     gray_model.conv1.weight.data = w
     return gray_model
 
