@@ -53,6 +53,7 @@ Most of the tools used to initialize, define, and train the models for this proj
 See **detect_emotions.py** for applying the trained model to detect and classify emotions across images and videos. 
     
 ![labeled-friends.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-friends.png)
+![labeled-office.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-office.png)
     
 ### Requirements
 ```
