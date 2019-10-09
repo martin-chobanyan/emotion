@@ -14,7 +14,10 @@ The five target emotions that will be detected are:
 
 ![labeled-friends.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-friends.png)
 ![labeled-office.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-office.png)
-![labeled-home-alone.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-home-alone.png)
+
+<!--![labeled-friends.png](resources/labeled-friends.png "Title")  -->
+<!--![labeled-office.png](resources/labeled-office.png "Title")-->
+<!--![labeled-home-alone.png](resources/labeled-home-alone.png "Title")  -->
 
 ### Data Collection
 The first step in training a supervised machine learning model is to collect labeled data.
