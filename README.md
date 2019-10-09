@@ -52,6 +52,8 @@ The code for the final training pipeline on the scraped images can be found in *
 Most of the tools used to initialize, define, and train the models for this project can be found in **model.py**.
 See **detect_emotions.py** for applying the trained model to detect and classify emotions across images and videos. 
     
+![labeled-friends.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-friends.png)
+    
 ### Requirements
 ```
 google_images_download
