@@ -12,6 +12,10 @@ The five target emotions that will be detected are:
 4. **Sad**
 5. **Surprised** 
 
+![labeled-friends.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-friends.png)
+![labeled-office.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-office.png)
+![labeled-home-alone.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-home-alone.png)
+
 ### Data Collection
 The first step in training a supervised machine learning model is to collect labeled data.
 A good starting point is the publicly available [FER dataset](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data),
@@ -52,9 +56,7 @@ The code for the final training pipeline on the scraped images can be found in *
 Most of the tools used to initialize, define, and train the models for this project can be found in **model.py**.
 See **detect_emotions.py** for applying the trained model to detect and classify emotions across images and videos. 
     
-![labeled-friends.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-friends.png)
-![labeled-office.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-office.png)
-    
+   
 ### Requirements
 ```
 google_images_download
