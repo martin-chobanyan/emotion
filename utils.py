@@ -8,7 +8,7 @@ from tqdm import tqdm
 from PIL import Image, ImageFont
 
 MIN_FONT_SIZE = 8
-MAX_FONT_SIZE = 50
+MAX_FONT_SIZE = 100
 MAX_MSG_SIZE = len('surprised: 100.00%')
 
 
