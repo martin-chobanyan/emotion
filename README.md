@@ -1,4 +1,4 @@
-## Emotion detector (work in progress)
+## Emotion detector
 The goal of this project is to leverage existing, open-source tools to quickly train a deep learning model that detects emotions from human faces.
 This repo offers tools to 
 - scrape a dataset from Google Images and leverage the queries to label the images
