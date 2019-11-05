@@ -1,4 +1,4 @@
-## Emotion detector (work in progress)
+## Emotion detector
 The goal of this project is to leverage existing, open-source tools to quickly train a deep learning model that detects emotions from human faces.
 This repo offers tools to 
 - scrape a dataset from Google Images and leverage the queries to label the images
@@ -11,6 +11,8 @@ The five target emotions that will be detected are:
 3. **Happy**
 4. **Sad**
 5. **Surprised** 
+
+For a detailed discussion of this project, see this accompanying [blog post](https://medium.com/swlh/training-an-emotion-detector-with-transfer-learning-91dea84adeed)
 
 ![labeled-friends.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-friends.png)
 ![labeled-office.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-office.png)
