@@ -14,8 +14,8 @@ The five target emotions that will be detected are:
 
 For a detailed discussion of this project, see this accompanying [blog post](https://medium.com/swlh/training-an-emotion-detector-with-transfer-learning-91dea84adeed)
 
-![labeled-friends.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-friends.png)
-![labeled-office.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-office.png)
+![labeled-friends.png](https://github.com/martin-chobanyan/emotion/blob/master/resources/labeled-friends.png)
+![labeled-harry-potter.png](https://github.com/martin-chobanyan/emotion/blob/master/resources/labeled-harry-potter.png)
 
 ### Data Collection
 Once the [FER dataset](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data) is downloaded, **unpack_fer_data.py** can be used to extract, process, and store these images in a directory.  
