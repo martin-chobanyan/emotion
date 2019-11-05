@@ -18,22 +18,16 @@ For a detailed discussion of this project, see this accompanying [blog post](htt
 ![labeled-office.png](https://github.com/mcGIT123/emotion/blob/master/resources/labeled-office.png)
 
 ### Data Collection
-The first step in training a supervised machine learning model is to collect labeled data.
-A good starting point is the publicly available [FER dataset](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data),
-a collection of grayscale, 48x48 images of faces labeled by their expressed emotion. Once the CSV file is downloaded, 
-**unpack_fer_data.py** can be used to extract, process, and store these images in a directory.
+Once the [FER dataset](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data) is downloaded, **unpack_fer_data.py** can be used to extract, process, and store these images in a directory.  
 
-In addition to these images, **download_data.py** can be used to scrape data from Google Images and use the keywords to label the downloaded images. 
-This is done using the 'google_images_download' library.
+In addition to these images, **download_data.py** can be used to scrape data from Google Images and use the keywords to label the downloaded images. This is done using the [google_images_download](https://google-images-download.readthedocs.io/en/latest/installation.html) library.
 
 ### Fine-tuning a pretrained ImageNet model
-The base model for this project is a Resnet model pretrained on ImageNet (as is common for most computer vision transfer learning tasks).
-This model will be fine-tuned later on in the pipeline to detect emotions from faces.
+The base model for this project is a Resnet model pretrained on ImageNet from torchvision. This model will be fine-tuned later on in the pipeline to detect emotions from faces.
 
-Before this is done, however, the pretrained model is altered to accept single-channel grayscale images.
-It is then fine-tuned such that its output embedding for a grayscale image closely matches the output of the
-vanilla model with the RGB version of the same image. 
-This is done because later on in the pipeline, the faces will be transformed to grayscale before being fed to the model.
+Before this is done, the pretrained model is altered to accept single-channel grayscale images and then fine-tuned such that its output embedding for a grayscale image closely matches the output of the
+vanilla model with the RGB version of the same image.  
+
 See **finetune_gray_imagenet.py** for this code.
 
 The Google Images scraper can again be leveraged to pull down a small, "fake" sample of ImageNet by querying for a handful of images for each ImageNet label.
@@ -48,16 +42,15 @@ See **finetune_fer.py** for this code.
 In order to remove unnecessary features from the scraped data, the images are transformed into single-channel
 grayscale images and are cropped such that each image contains only a single human face. 
 The latter step is performed by applying a pretrained MTCNN face detection model to detect and return a bounding box of each face in an image.
-This model comes from the 'facenet_pytorch' library. 
+This model comes from the [facenet_pytorch](https://github.com/timesler/facenet-pytorch) library. 
 
 The code for the final training pipeline on the scraped images can be found in **finetune_emotion.py**.
 
-
 ### Applying the models
-Most of the tools used to initialize, define, and train the models for this project can be found in **model.py**.
-See **detect_emotions.py** for applying the trained model to detect and classify emotions across images and videos. 
-    
-   
+Most of the tools used to initialize, define, and train the models for this project can be found in **model.py**.  
+
+**detect_emotions.py** is a command line script that loads a checkpoint of the fully trained model and applies it to detect emotions within a target image.
+
 ### Requirements
 ```
 google_images_download
