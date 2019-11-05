@@ -46,12 +46,16 @@ class FaceFinder:
         Parameters
         ----------
         img: Image
+        return_boxes: bool, optional
+            If True, then a the bounding box of each face is returned as a numpy array. The format of the bounding boxes
+            are (x_min, y_min, x_max, y_max). If a single face is detected, then the array will have four elements.
+            If multiple faces are detected then the array will have shape (n, 4). Default is False.
 
         Returns
         -------
         Image or list[Image]
             If there is one face, then a single Image is returned. If multiple faces are found, then a list of Image
-            objects are returned.
+            objects are returned. If return_boxes is True, then the bounding boxes of the faces are returned as well.
         """
         boxes, _ = self.face_model.detect(img)
         if boxes is not None:
