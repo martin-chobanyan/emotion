@@ -20,7 +20,7 @@ For a detailed discussion of this project, see this accompanying [blog post](htt
 ### Data Collection
 Once the [FER dataset](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data) is downloaded, **unpack_fer_data.py** can be used to extract, process, and store these images in a directory.  
 
-In addition to these images, **download_data.py** can be used to scrape data from Google Images and use the keywords to label the downloaded images. This is done using the 'google_images_download' library.
+In addition to these images, **download_data.py** can be used to scrape data from Google Images and use the keywords to label the downloaded images. This is done using the [google_images_download](https://google-images-download.readthedocs.io/en/latest/installation.html) library.
 
 ### Fine-tuning a pretrained ImageNet model
 The base model for this project is a Resnet model pretrained on ImageNet from torchvision. This model will be fine-tuned later on in the pipeline to detect emotions from faces.
@@ -42,7 +42,7 @@ See **finetune_fer.py** for this code.
 In order to remove unnecessary features from the scraped data, the images are transformed into single-channel
 grayscale images and are cropped such that each image contains only a single human face. 
 The latter step is performed by applying a pretrained MTCNN face detection model to detect and return a bounding box of each face in an image.
-This model comes from the 'facenet_pytorch' library. 
+This model comes from the [facenet_pytorch](https://github.com/timesler/facenet-pytorch) library. 
 
 The code for the final training pipeline on the scraped images can be found in **finetune_emotion.py**.
 
