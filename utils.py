@@ -29,6 +29,7 @@ class FontLoader:
     max_msg_size: int, optional
         The maximum message size to consider (default=18; length of 'surprised: 100.00%')
     """
+
     def __init__(self, min_size=MIN_FONT_SIZE, max_size=MAX_FONT_SIZE, max_msg_size=MAX_MSG_SIZE):
         num_fonts = max_size - min_size + 1
         self.font_sizes = np.zeros(num_fonts, dtype=np.int32)

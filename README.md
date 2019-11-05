@@ -14,7 +14,6 @@ The five target emotions that will be detected are:
 
 For a detailed discussion of this project, see this accompanying [blog post](https://medium.com/swlh/training-an-emotion-detector-with-transfer-learning-91dea84adeed)
 
-![labeled-friends.png](https://github.com/martin-chobanyan/emotion/blob/master/resources/labeled-friends.png)
 ![labeled-harry-potter.png](https://github.com/martin-chobanyan/emotion/blob/master/resources/labeled-harry-potter.png)
 
 ### Data Collection

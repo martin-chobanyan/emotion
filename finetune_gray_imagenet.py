@@ -19,8 +19,7 @@ from torch.utils.data import DataLoader, random_split
 from torchvision.datasets import ImageFolder
 from torchvision.models import resnet50
 from torchvision.transforms import Compose, Grayscale, Normalize, ToTensor
-from dtsckit.pytorch.model import checkpoint
-from model import init_grayscale_resnet
+from model import init_grayscale_resnet, checkpoint
 from utils import RecoverImage
 
 # imagenet color normalization
